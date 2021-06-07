@@ -1,0 +1,23 @@
+{
+  "name": "energy-maps-api",
+  "version": "1.0.0",
+  "description": "An API for RDCEP's US Energy Infrastructure Visualization",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RDCEP/energy-maps-api.git"
+  },
+  "author": "Benjamin Kleeman",
+  "license": "ECL-2.0",
+  "bugs": {
+    "url": "https://github.com/RDCEP/energy-maps-api/issues"
+  },
+  "homepage": "https://github.com/RDCEP/energy-maps-api#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "glob": "^7.1.7"
+  }
+}
