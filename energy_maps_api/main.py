@@ -46,7 +46,6 @@ class EnergyMapsMongoDocument(EnergyMapsSchema):
 
 
 class EnergyMapsAPI(object):
-
     def __init__(self):
         self._json = None
         self._db = None
@@ -54,10 +53,23 @@ class EnergyMapsAPI(object):
 
     @property
     def json(self):
+        """Temporary store for JSON data when a JSON file is ingested.
+        The JSON is processed and held in the self.data property before
+        ingestion.
+
+        :return: A dictionary representing the JSON
+        :rtype: dict
+        """
         return self._json
 
     @property
     def db(self):
+        """Connection to the Mongo db based on credentials found in the
+        `static/config.ini` file.
+
+        :return: An instance of a MongoClient connection
+        :rtype: MongoClient
+        """
         if self._db is None:
             client = MongoClient(URI) if not MONGO['local'] \
                 else MongoClient('localhost', MONGO['port'])
@@ -66,9 +78,20 @@ class EnergyMapsAPI(object):
 
     @property
     def data(self):
+        """Temporary storage for data to be ingested.
+
+        :return: Ingestable data
+        :rtype: list
+        """
         return self._data
 
     def load_geojson(self, path):
+        """Load a GeoJSON document and stare its features for ingesting.
+
+        :param path: Path to the GeoJSON file
+        :return: Success
+        :rtype: bool
+        """
         _json = {}
         try:
             with open(path) as f:
@@ -95,6 +118,8 @@ class EnergyMapsAPI(object):
                               for l in props_filter]})
             for d in self.data]
         self.db['energy_shit'].insert_many(docs)
+        print('{} documents ingested.'.format(len(docs)))
+        return True
 
 
 if __name__ == '__main__':
