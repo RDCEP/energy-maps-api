@@ -9,18 +9,18 @@ except ImportError:
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-cf = configparser.ConfigParser()
-cf.read(os.path.join(
+config_file = configparser.ConfigParser()
+config_file.read(os.path.join(
     BASE_DIR, 'static', 'config.ini'
 ))
 
 MONGO = dict(
     local=True,
-    user=cf.get('user', 'username'),
-    password=cf.get('user', 'password'),
-    domain=cf.get('server', 'domain'),
-    database=cf.get('server', 'database'),
-    port=int(cf.get('server', 'port')),
+    user=config_file.get('user', 'username'),
+    password=config_file.get('user', 'password'),
+    domain=config_file.get('server', 'domain'),
+    database=config_file.get('server', 'database'),
+    port=int(config_file.get('server', 'port')),
 )
 
 URI = "mongodb://{}:{}@{}/{}?authMechanism=SCRAM-SHA-1".format(
