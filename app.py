@@ -1,5 +1,4 @@
 from flask import Flask
-from energy_maps_api import funcs
 
 app = Flask(__name__)
 
@@ -20,4 +19,4 @@ def get_region(region):
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    return funcs.upload_infrastructure_type()
+    return 'Upload infrastructure type'
