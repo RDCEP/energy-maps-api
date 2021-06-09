@@ -4,7 +4,7 @@ import os
 try:
     import configparser
 except ImportError:
-    import configparser as configparser
+    import ConfigParser as configparser
 
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
