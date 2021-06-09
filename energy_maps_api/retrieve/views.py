@@ -1,15 +1,20 @@
 from flask import Blueprint
 from energy_maps_api.constants import URL_PREFIX
 
-bp = Blueprint('retrieve', __name__, static_folder='static', template_folder='templates', url_prefix=URL_PREFIX)
+
+bp = Blueprint('retrieve', __name__,
+               url_prefix=URL_PREFIX)
+
 
 @bp.route('/')
 def index():
     return "Index page"
 
+
 @bp.route('/<infrastructure_type>')
 def get_infrastructure(infrastructure_type):
     return infrastructure_type
+
 
 @bp.route('/<region>')
 def get_region(region):
