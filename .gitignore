@@ -1,4 +1,4 @@
-/static/config.ini
+*/static/config.ini
 /pycache/
 /energy_maps_api/pycache/
 *.pyc
