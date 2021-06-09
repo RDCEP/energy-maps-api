@@ -23,6 +23,6 @@ MONGO = dict(
     port=int(config_file.get('server', 'port')),
 )
 
-URI = "mongodb://{}:{}@{}/{}?authMechanism=SCRAM-SHA-1".format(
+URI = "mongodb+srv://{}:{}@{}/{}?retryWrites=true&w=majority".format(
     MONGO['user'], MONGO['password'], MONGO['domain'],
     MONGO['database'])
