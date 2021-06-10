@@ -14,17 +14,18 @@ app.register_blueprint(retrieve_bp)
 app.register_blueprint(update_bp)
 app.register_blueprint(delete_bp)
 
-
+# Could create an errors module for this 
+# consider spitting back the request someone made
 @app.errorhandler(404)
 def not_found(error):
     return render_template('errors/404.html'), 404
 
 
 @app.errorhandler(403)
-def not_found(error):
+def forbidden_access(error):
     return render_template('errors/403.html'), 403
 
 
 @app.errorhandler(500)
-def not_found(error):
+def internal_server(error):
     return render_template('errors/500.html'), 500
