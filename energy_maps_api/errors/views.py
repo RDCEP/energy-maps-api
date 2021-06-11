@@ -3,8 +3,9 @@ from energy_maps_api.constants import URL_PREFIX
 from flask import render_template
 from flask import request
 # not sure which logging package to use
-from flask import log
-import logging
+# from flask import log
+# import logging
+from energy_maps_api import app
 
 bp = Blueprint('retrieve', __name__, url_prefix=URL_PREFIX)
 
