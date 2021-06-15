@@ -10,6 +10,48 @@ bp = Blueprint('retrieve', __name__,
 def index():
     return "Index page"
 
+# Example of getting url params from the client
+# https://github.com/njmattes/goodfornothing/blob/master/goodfornothing/no1/views.py
+# @mod.route('/init/<int:width>/<int:height>')
+# def init(width, height):
+#     session['width'] = width
+#     session['height'] = height
+#     session['area'] = width * height
+#     arr = np.arange(session['area'])
+#     np.random.shuffle(arr)
+#     init_collection(session.sid)
+#     write_idxs(arr, session.sid)
+#     return Response(
+#         json.dumps({'success': True}),
+#         200,
+#         {'ContentType': 'application/json'}
+#     )
+
+# Relevant client side example, put something like this in the front end app
+# function pxls(t) {
+#     /**
+#      * If we have run through all pixels, set t back to 0, begin running
+#      * the wipe() function, and return.
+#      */
+#     if (t >= width * height) {
+#       t = 0;
+#       wipe(t, width * height);
+#       return;
+#     }
+#     d3.json(`/no1/get_${mode}/${t},${number}/${threshold}/${network}`, {
+#       headers: {
+#         'Content-type': 'application/json; charset=UTF-8'
+#       }}).then(json => {
+#         for (let i = 0; i < json['pxls'].length; ++i) {
+#           fill_pxl(
+#             json.pxls[i].color,
+#             json.pxls[i].xy
+#           );
+#         }
+#       });
+#     t += number;
+#     setTimeout(pxls.bind({}, t), timer);
+#   }
 
 @bp.route('/<infrastructure_type>')
 def get_infrastructure(infrastructure_type):
