@@ -1,3 +1,6 @@
+# API will get called if we zoom in or out, when the user first goes to the site, when they turn on a new layer
+# API won't get called when I reorder layers, when I turn off a layer
+
 from flask import Blueprint
 from energy_maps_api.constants import URL_PREFIX
 

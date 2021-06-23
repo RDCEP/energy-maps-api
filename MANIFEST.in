@@ -1,0 +1,8 @@
+graft energy-maps-api/static
+graft energy-maps-api/templates
+graft energy-maps-api/create
+graft energy-maps-api/retrieve
+graft energy-maps-api/update
+graft energy-maps-api/delete
+graft energy-maps-api/errors
+global-exclude *.pyc
