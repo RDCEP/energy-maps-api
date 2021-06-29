@@ -13,6 +13,7 @@ bp = Blueprint('create', __name__,
 @bp.route('/add_infrastructure/<string:file>', methods=['POST'])
 def add_infrastructure(file: str):
     # read file from user, determine how best to do this
+    # do we want to create a login system and a form for submitting?
     file = jsonify(file)
     test = 0 # MDB operations to query db for existing record
     if test:
