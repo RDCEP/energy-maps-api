@@ -24,6 +24,12 @@ def forbidden_access(error):
     return render_template('errors/403.html'), 403
 
 
+@bp.errorhandler(409)
+def conflict(error):
+    error_response('409 Conflict')
+    return render_template(('errors/409.html')), 409
+
+
 @bp.errorhandler(500)
 def internal_server(error):
     error_response('500 Internal Server Error')
