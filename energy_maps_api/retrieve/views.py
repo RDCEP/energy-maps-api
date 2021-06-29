@@ -1,8 +1,9 @@
 # API will get called if we zoom in or out, when the user first goes to the site, when they turn on a new layer
 # API won't get called when I reorder layers, when I turn off a layer
 
-from flask import Blueprint
+from flask import Blueprint, jsonify
 from energy_maps_api.constants import URL_PREFIX
+import energy_maps_api.errors.views as errors 
 
 
 bp = Blueprint('retrieve', __name__,
@@ -56,9 +57,14 @@ def index():
 #     setTimeout(pxls.bind({}, t), timer);
 #   }
 
-@bp.route('/<infrastructure_type>')
-def get_infrastructure(infrastructure_type):
-    return infrastructure_type
+@bp.route('/<string:infrastructure_type>')
+def get_infrastructure(infrastructure_type: str, methods=['GET']):
+    result = 0 # MDB operations to retriever infrastructure_type 
+               # from the db
+    if result:
+        return jsonify(result)
+    else: 
+        return errors.not_found()
 
 
 @bp.route('/<region>')
