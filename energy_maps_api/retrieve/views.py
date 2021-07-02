@@ -1,5 +1,6 @@
 # API will get called if we zoom in or out, when the user first goes to the site, when they turn on a new layer
 # API won't get called when I reorder layers, when I turn off a layer
+# Minimum retrieval is pass me a bounding box -- doesn't even have to be the right ones
 
 from flask import Blueprint, jsonify
 from energy_maps_api.constants import URL_PREFIX
@@ -57,8 +58,10 @@ def index():
 #     setTimeout(pxls.bind({}, t), timer);
 #   }
 
+# pass a bounding box, a filter for types of info (only coal power plants)
+# can be more minimal than that for the first go around though
 @bp.route('/<string:infrastructure_type>')
-def get_infrastructure(infrastructure_type: str, methods=['GET']):
+def get_infrastructure(infrastructure_type: str, bounding_box, methods=['GET']):
     result = 0 # MDB operations to retriever infrastructure_type 
                # from the db
     if result:

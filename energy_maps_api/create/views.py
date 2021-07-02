@@ -24,3 +24,7 @@ def add_infrastructure():
                 return jsonify(new_infrastructure, message="Infrastructure added successfully"), 201
         else: 
             return errors.bad_request()
+
+# The below Stack Overflow post gives example code for roughly how a user would interface w/
+# the API programmatically:
+# https://stackoverflow.com/questions/9746303/how-do-i-send-a-post-request-as-a-json/26876308#26876308
