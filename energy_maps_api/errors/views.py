@@ -12,6 +12,13 @@ bp = Blueprint('retrieve', __name__, url_prefix=URL_PREFIX)
 def error_response(status):
     return app.logger.error('Error: %s\n %s\n%s\n%s', status, request.headers, request.get_data, request.url)
 
+
+@bp.errorhandler(400)
+def bad_request():
+    error_response('400 Bad Request')
+    return render_template('errors/400.html'), 400
+
+
 @bp.errorhandler(404)
 def not_found(error):
     error_response('404 Not Found')
