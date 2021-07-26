@@ -12,10 +12,11 @@ except ImportError:
 import pprint as pp
 
 
-client = MongoClient(URI) if not MONGO['local'] \
-    else MongoClient('localhost', MONGO['port'])
+client = MongoClient(URI)
 db = client[MONGO['database']]
 collection_infrastructure = db['infrastructure']
+
+print(client, db, collection_infrastructure)
 
 # quick and dirty version
 
