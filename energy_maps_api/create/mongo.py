@@ -12,10 +12,12 @@ except ImportError:
 import pprint as pp
 
 
-# quick and dirty version
-client = MongoClient('mongodb+srv://dev:lB1MU5zzBb8MOmIn@cluster0.gjutf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
-db = client['energy_maps_db']
+client = MongoClient(URI) if not MONGO['local'] \
+    else MongoClient('localhost', MONGO['port'])
+db = client[MONGO['database']]
 collection_infrastructure = db['infrastructure']
+
+# quick and dirty version
 
 files = []
 for dirname, dirnames, filenames in os.walk('../../data/json'):
