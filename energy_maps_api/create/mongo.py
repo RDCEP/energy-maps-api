@@ -16,8 +16,6 @@ client = MongoClient(URI)
 db = client[MONGO['database']]
 collection_infrastructure = db['infrastructure']
 
-print(client, db, collection_infrastructure)
-
 # quick and dirty version
 
 files = []
@@ -25,18 +23,70 @@ for dirname, dirnames, filenames in os.walk('../../data/json'):
     for filename in filenames:
         files.append(os.path.join(dirname, filename))
 
-files.remove('../../data/json/.DS_Store')
-# pp.pprint(files)
+UNICODE_ERRORS = [
+    '../../data/json/.DS_Store',
+    '../../data/json/wind-map/.DS_Store',
+    '../../data/json/wind-map/windmap-output/.DS_Store'
+]
+
+for path in UNICODE_ERRORS:
+    files.remove(path)
+
+FAILING_FILES = [
+    '../../data/json/states-10m.json',
+    '../../data/json/wind-map/ws-clipped-merged-simplify20.json',
+    '../../data/json/states-output/nation.json',
+    '../../data/json/states-output/states-no-overlap.json'
+]
+
+for file in FAILING_FILES:
+    with open(file, 'r') as f:
+        file_data = json.loads(f.read())
+        print(file, file_data.keys())
+
+# The following 2 "failing files" upload successfully when you do them
+# this way rather than iterativley with the rest. The first two
+# indeces of FAILING_FILES won't go through manually either though.
+with open(FAILING_FILES[2], 'r') as f:
+    file_data = json.loads(f.read())
+    print(file_data.keys())
+    collection_infrastructure.insert_many(file_data['geometries'])
+
+with open(FAILING_FILES[3], 'r') as f:
+    file_data = json.loads(f.read())
+    print(file_data.keys())
+    collection_infrastructure.insert_many(file_data['geometries'])
+
+for path in FAILING_FILES:
+    files.remove(path)
 
 for file in files:
     with open(file, 'r') as f:
-        try:
-            file_data = json.loads(f.read())
-            print(file_data.keys())
-            collection_infrastructure.insert_many(file_data['features'])
-        except: 
-            print('failed file:' + file)
+        file_data = json.loads(f.read())
+        print('Attempted file: ' + file)
+        print (file_data.keys())
 
+        if file_data.keys() == "dict_keys(['type', 'crs', 'features'])" or "dict_keys(['type', 'name', 'crs', 'features'])" or "dict_keys(['type', 'name', 'features'])" or "dict_keys(['type', 'features'])":
+            collection_infrastructure.insert_many(file_data['features'])
+            print('Successful file: ' + file)
+        if file_data.keys() == "dict_keys(['type', 'arcs', 'transform', 'objects'])":
+            collection_infrastructure.insert_many(file_data['objects'])
+            print('Successful file: ' + file)
+        if file_data.keys() == "dict_keys(['type', 'geometries'])":
+            collection_infrastructure.insert_many(file_data['geometries'])
+            print('Successful file: ' + file)
+
+# This method had things failing seemingly arbitrarily.
+        # try:
+        #     print('successful file: ' + file)
+        #     print(file_data.keys())
+        #     collection_infrastructure.insert_many(file_data['features'])
+        # except: 
+        #     collection_infrastructure.insert_many(file_data['objects'])
+        #     print('OBJECTS FILE: ' + file, file_data.keys())
+        # finally:
+        #      print('GEOMETRIES FILE: ' + file, file_data.keys())
+        #      collection_infrastructure.insert_many(file_data['geometries'])
 
 client.close()
 
