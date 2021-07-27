@@ -18,6 +18,7 @@ collection_infrastructure = db['infrastructure']
 
 # quick and dirty version
 
+# Store all data files into array for iteration
 files = []
 for dirname, dirnames, filenames in os.walk('../../data/json'):
     for filename in filenames:
@@ -49,9 +50,9 @@ for file in FAILING_FILES:
         file_data = json.loads(f.read())
         print(file, file_data.keys())
 
-# The following 2 "failing files" upload successfully when you do them
-# manually rather than iterativley with the rest. The first two
-# indeces of FAILING_FILES won't go through manually though
+# The following 3 "failing files" upload successfully when you do them
+# manually rather than iterativley with the rest. The first 
+# index of FAILING_FILES won't go through manually though
 # so we still need to trace down that issue
 with open(FAILING_FILES[2], 'r') as f:
     file_data = json.loads(f.read())
@@ -62,6 +63,20 @@ with open(FAILING_FILES[3], 'r') as f:
     file_data = json.loads(f.read())
     print(file_data.keys())
     collection_infrastructure.insert_many(file_data['geometries'])
+
+# This one was failing before because geometries was further nested
+with open(FAILING_FILES[0], 'r') as f:
+    file_data = json.loads(f.read())
+    print(file_data.keys())
+    collection_infrastructure.insert_many(file_data['objects']['states']['geometries'])
+
+# The following file won't go through when trying to insert by geometries 
+# because each wind speed category has its own 'geometries' property.
+# We have to discern whether the data received from mapshaper is good enough or not.
+# with open(FAILING_FILES[1], 'r') as f:
+#     file_data = json.loads(f.read())
+#     print(file_data.keys())
+#     collection_infrastructure.insert_many(file_data['objects']['geometries'])
 
 # remove failing files from larger, properly functioning batch
 for path in FAILING_FILES:
