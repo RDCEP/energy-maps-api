@@ -23,6 +23,7 @@ for dirname, dirnames, filenames in os.walk('../../data/json'):
     for filename in filenames:
         files.append(os.path.join(dirname, filename))
 
+# These useless macOS desktop services files were giving unicode errors
 UNICODE_ERRORS = [
     '../../data/json/.DS_Store',
     '../../data/json/wind-map/.DS_Store',
@@ -32,6 +33,9 @@ UNICODE_ERRORS = [
 for path in UNICODE_ERRORS:
     files.remove(path)
 
+# These files fail when trying to insert them iteratively.
+# There is a batch of files that are functioning properly
+# so we want to exclude these from that work
 FAILING_FILES = [
     '../../data/json/states-10m.json',
     '../../data/json/wind-map/ws-clipped-merged-simplify20.json',
@@ -39,14 +43,16 @@ FAILING_FILES = [
     '../../data/json/states-output/states-no-overlap.json'
 ]
 
+# figure out the keys for each file
 for file in FAILING_FILES:
     with open(file, 'r') as f:
         file_data = json.loads(f.read())
         print(file, file_data.keys())
 
 # The following 2 "failing files" upload successfully when you do them
-# this way rather than iterativley with the rest. The first two
-# indeces of FAILING_FILES won't go through manually either though.
+# manually rather than iterativley with the rest. The first two
+# indeces of FAILING_FILES won't go through manually though
+# so we still need to trace down that issue
 with open(FAILING_FILES[2], 'r') as f:
     file_data = json.loads(f.read())
     print(file_data.keys())
@@ -57,15 +63,19 @@ with open(FAILING_FILES[3], 'r') as f:
     print(file_data.keys())
     collection_infrastructure.insert_many(file_data['geometries'])
 
+# remove failing files from larger, properly functioning batch
 for path in FAILING_FILES:
     files.remove(path)
 
 for file in files:
     with open(file, 'r') as f:
         file_data = json.loads(f.read())
+        # logging to help discern which files are passing
         print('Attempted file: ' + file)
         print (file_data.keys())
 
+        # filter by the appropriate key for each file and log success
+        # script will break on its own if there is an error
         if file_data.keys() == "dict_keys(['type', 'crs', 'features'])" or "dict_keys(['type', 'name', 'crs', 'features'])" or "dict_keys(['type', 'name', 'features'])" or "dict_keys(['type', 'features'])":
             collection_infrastructure.insert_many(file_data['features'])
             print('Successful file: ' + file)
@@ -90,24 +100,8 @@ for file in files:
 
 client.close()
 
-# with open('../../data/json/test_file.geojson', 'r') as f:
-#     file_data = json.load(f)
-
-# collection_infrastructure.insert_one(file_data)
-# client.close()
-
-# api = EnergyMapsAPI()
-
 # read a file and convert to dict
-# with open('../../data/json/test_file.geojson', 'r') as f:
-#     file_data = json.load(f)
-# pp.pprint(file_data)
-
 # modify the schema 
-
-# with open('../../data/json/test_file.geojson', 'w') as f:
-#     json.dump(file_data, f)
-
 # upload to single massive collection
 # create index upon collection instantiation
 # index should update automatically

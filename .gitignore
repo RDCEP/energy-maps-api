@@ -2,3 +2,4 @@
 /pycache/
 /energy_maps_api/pycache/
 *.pyc
+/data/
