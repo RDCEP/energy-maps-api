@@ -22,4 +22,4 @@ with open('../../data/new_data/Oil_Gas_Active_Platforms.geojson', 'w') as f:
             "name": "oil_gas_active_platforms"
         }
 
-    json.dump(file_data, f, indent=2)
+    json.dump(file_data, f)
