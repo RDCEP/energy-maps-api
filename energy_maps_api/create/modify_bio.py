@@ -9,17 +9,22 @@ with open('../../data/original_data/biodiesel.json', 'r') as f:
 
 with open('../../data/new_data/biodiesel.json', 'w') as f:
     for feature in file_data["features"]:
+        feature["properties"] = { "original" : feature["properties"]}
         feature["properties"]["required"] = {
             "unit": None,
             # visual dimension
             "viz_dim": None,
             "legend": "Biodiesel",
-            "years": [feature["properties"]["Data_Perio"]]
+            "years": [feature["properties"]["original"]["Data_Perio"]]
         }
 
         feature["properties"]["optional"] = {
             "description": "",
-            "name": "biodiesel"
         }
 
-    json.dump(file_data, f, indent=2)
+        feature["properties"]["type"] = {
+            "primary": "biodiesel",
+            "secondary": None
+        }
+
+    json.dump(file_data, f)

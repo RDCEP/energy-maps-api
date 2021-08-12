@@ -9,17 +9,22 @@ with open('../../data/original_data/NaturalGas_InterIntrastate_Pipelines_US.geoj
 
 with open('../../data/new_data/NaturalGas_InterIntrastate_Pipelines_US.geojson', 'w') as f:
     for feature in file_data["features"]:
+        feature["properties"] = { "original" : feature["properties"]}
         feature["properties"]["required"] = {
             "unit": None,
             # visual dimension
             "viz_dim": None,
-            "legend": "Gas inter/intrastate pipelines",
+            "legend": "Gas pipelines",
             "years": []
         }
 
         feature["properties"]["optional"] = {
             "description": "",
-            "name": "gas_inter_intra_pipelines"
         }
 
-    json.dump(file_data, f)
+        feature["properties"]["type"] = {
+            "primary": "pipeline",
+            "secondary": "gas"
+        }
+
+    json.dump(file_data, f, indent=2)

@@ -23,8 +23,8 @@ with open('../../data/new_data/CoalMines_US_2013.geojson', 'w') as f:
         }
 
         feature["properties"]["type"] = {
-            "primary": "coal_mine",
-            "secondary": None
+            "primary": "mine",
+            "secondary": "coal"
         }
 
-    json.dump(file_data, f, indent=2)
+    json.dump(file_data, f)

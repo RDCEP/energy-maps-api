@@ -9,17 +9,22 @@ with open('../../data/original_data/NaturalGas_UndergroundStorage_US_July2014.ge
 
 with open('../../data/new_data/NaturalGas_UndergroundStorage_US_July2014.geojson', 'w') as f:
     for feature in file_data["features"]:
+        feature["properties"] = { "original" : feature["properties"]}
         feature["properties"]["required"] = {
             "unit": None,
             # visual dimension
-            "viz_dim": feature["properties"]["WorkingGas"],
+            "viz_dim": "WorkingGas",
             "legend": "Gas underground storage",
             "years": []
         }
 
         feature["properties"]["optional"] = {
             "description": "",
-            "name": "gas_underground_storage"
         }
 
-    json.dump(file_data, f, indent=2)
+        feature["properties"]["type"] = {
+            "primary": "underground_storage",
+            "secondary": "gas"
+        }
+
+    json.dump(file_data, f)
