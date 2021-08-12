@@ -20,55 +20,56 @@ collection_infrastructure = db['infrastructure']
 
 # Store all data files into array for iteration
 files = []
-for dirname, dirnames, filenames in os.walk('../../data/json'):
+for dirname, dirnames, filenames in os.walk('../../data/new_data'):
     for filename in filenames:
         files.append(os.path.join(dirname, filename))
 
-# These useless macOS desktop services files were giving unicode errors
-UNICODE_ERRORS = [
-    '../../data/json/.DS_Store',
-    '../../data/json/wind-map/.DS_Store',
-    '../../data/json/wind-map/windmap-output/.DS_Store'
-]
 
-for path in UNICODE_ERRORS:
-    files.remove(path)
+# placeholder comment for any .DS_Store files that pop up
+# UNICODE_ERRORS = [
+#     '../../data/json/.DS_Store',
+#     '../../data/json/wind-map/.DS_Store',
+#     '../../data/json/wind-map/windmap-output/.DS_Store'
+# ]
+
+# for path in UNICODE_ERRORS:
+#     files.remove(path)
 
 # These files fail when trying to insert them iteratively.
 # There is a batch of files that are functioning properly
 # so we want to exclude these from that work
-FAILING_FILES = [
-    '../../data/json/states-10m.json',
-    '../../data/json/wind-map/ws-clipped-merged-simplify20.json',
-    '../../data/json/states-output/nation.json',
-    '../../data/json/states-output/states-no-overlap.json'
-]
+# FAILING_FILES = [
+#     '../../data/json/states-10m.json',
+#     '../../data/json/wind-map/ws-clipped-merged-simplify20.json',
+#     '../../data/json/states-output/nation.json',
+#     '../../data/json/states-output/states-no-overlap.json'
+# ]
 
 # figure out the keys for each file
-for file in FAILING_FILES:
-    with open(file, 'r') as f:
-        file_data = json.loads(f.read())
-        print(file, file_data.keys())
+# for file in FAILING_FILES:
+#     with open(file, 'r') as f:
+#         file_data = json.loads(f.read())
+#         print(file, file_data.keys())
 
 # The following 3 "failing files" upload successfully when you do them
 # manually rather than iterativley with the rest. The first 
 # index of FAILING_FILES won't go through manually though
 # so we still need to trace down that issue
-with open(FAILING_FILES[2], 'r') as f:
-    file_data = json.loads(f.read())
-    print(file_data.keys())
-    collection_infrastructure.insert_many(file_data['geometries'])
+# with open(FAILING_FILES[2], 'r') as f:
+#     file_data = json.loads(f.read())
+#     print(file_data.keys())
+#     collection_infrastructure.insert_many(file_data['geometries'])
 
-with open(FAILING_FILES[3], 'r') as f:
-    file_data = json.loads(f.read())
-    print(file_data.keys())
-    collection_infrastructure.insert_many(file_data['geometries'])
+# with open(FAILING_FILES[3], 'r') as f:
+#     file_data = json.loads(f.read())
+#     print(file_data.keys())
+#     collection_infrastructure.insert_many(file_data['geometries'])
 
-# This one was failing before because geometries was further nested
-with open(FAILING_FILES[0], 'r') as f:
-    file_data = json.loads(f.read())
-    print(file_data.keys())
-    collection_infrastructure.insert_many(file_data['objects']['states']['geometries'])
+# # This one was failing before because geometries was further nested
+# with open(FAILING_FILES[0], 'r') as f:
+#     file_data = json.loads(f.read())
+#     print(file_data.keys())
+#     collection_infrastructure.insert_many(file_data['objects']['states']['geometries'])
 
 # The following file won't go through when trying to insert by geometries 
 # because each wind speed category has its own 'geometries' property.
@@ -79,8 +80,8 @@ with open(FAILING_FILES[0], 'r') as f:
 #     collection_infrastructure.insert_many(file_data['objects']['geometries'])
 
 # remove failing files from larger, properly functioning batch
-for path in FAILING_FILES:
-    files.remove(path)
+# for path in FAILING_FILES:
+#     files.remove(path)
 
 for file in files:
     with open(file, 'r') as f:
@@ -89,6 +90,7 @@ for file in files:
         print('Attempted file: ' + file)
         print (file_data.keys())
 
+        # Update these for new files
         # filter by the appropriate key for each file and log success
         # script will break on its own if there is an error
         if file_data.keys() == "dict_keys(['type', 'crs', 'features'])" or "dict_keys(['type', 'name', 'crs', 'features'])" or "dict_keys(['type', 'name', 'features'])" or "dict_keys(['type', 'features'])":
