@@ -8,17 +8,22 @@ with open('../../data/original_data/TightOil_ShaleGas_US_Aug2015.geojson', 'r') 
 
 with open('../../data/new_data/TightOil_ShaleGas_US_Aug2015.geojson', 'w') as f:
     for feature in file_data["features"]:
+        feature["properties"] = { "original" : feature["properties"]}
         feature["properties"]["required"] = {
             "unit": None,
             # visual dimension
-            "viz_dim": feature["properties"]["Area_sq_mi"],
+            "viz_dim": "Area_sq_mi",
             "legend": "Tight Oil/Shale Gas",
             "years": []
         }
 
         feature["properties"]["optional"] = {
-            "description": "",
-            "name": "tight_oil_shale_gas"
+            "description": ""
+        }
+
+        feature["properties"]["type"] = {
+            "primary": feature["properties"]["original"]["Lithology"].lower().replace(" ", "_").replace("&", "").replace("__", "_"),
+            "secondary": "gas"
         }
 
     json.dump(file_data, f)

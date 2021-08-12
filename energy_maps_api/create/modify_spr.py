@@ -8,10 +8,11 @@ with open('../../data/original_data/SPR_Aug2015.geojson', 'r') as f:
 
 with open('../../data/new_data/SPR_Aug2015.geojson', 'w') as f:
     for feature in file_data["features"]:
+        feature["properties"] = { "original" : feature["properties"]}
         feature["properties"]["required"] = {
             "unit": None,
             # visual dimension
-            "viz_dim": feature["properties"]["Capacity"],
+            "viz_dim": "Capacity",
             "legend": "Strategic petroleum reserves",
             "years": []
         }
@@ -19,6 +20,11 @@ with open('../../data/new_data/SPR_Aug2015.geojson', 'w') as f:
         feature["properties"]["optional"] = {
             "description": "",
             "name": "spr"
+        }
+
+        feature["properties"]["type"] = {
+            "primary": "strategic_reserve",
+            "secondary": "petroleum"
         }
 
     json.dump(file_data, f)

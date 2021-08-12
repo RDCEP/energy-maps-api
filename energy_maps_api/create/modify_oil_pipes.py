@@ -9,6 +9,7 @@ with open('../../data/original_data/CrudeOil_Pipelines_US_Nov2014.geojson', 'r')
 
 with open('../../data/new_data/CrudeOil_Pipelines_US_Nov2014.geojson', 'w') as f:
     for feature in file_data["features"]:
+        feature["properties"] = { "original" : feature["properties"]}
         feature["properties"]["required"] = {
             "unit": None,
             # visual dimension
@@ -19,7 +20,11 @@ with open('../../data/new_data/CrudeOil_Pipelines_US_Nov2014.geojson', 'w') as f
 
         feature["properties"]["optional"] = {
             "description": "",
-            "name": "oil_pipelines"
+        }
+
+        feature["properties"]["type"] = {
+            "primary": "pipeline",
+            "secondary": "oil"
         }
 
     json.dump(file_data, f)
