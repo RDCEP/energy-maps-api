@@ -6,7 +6,7 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-VERSION = '0.1.0'
+VERSION = 'v0.1.0'
 URL_PREFIX = 'api/' + VERSION + '/infrastructure'
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
