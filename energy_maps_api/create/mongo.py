@@ -24,65 +24,6 @@ for dirname, dirnames, filenames in os.walk('../../data/new_data'):
     for filename in filenames:
         files.append(os.path.join(dirname, filename))
 
-
-# placeholder comment for any .DS_Store files that pop up
-# UNICODE_ERRORS = [
-#     '../../data/json/.DS_Store',
-#     '../../data/json/wind-map/.DS_Store',
-#     '../../data/json/wind-map/windmap-output/.DS_Store'
-# ]
-
-# for path in UNICODE_ERRORS:
-#     files.remove(path)
-
-# These files fail when trying to insert them iteratively.
-# There is a batch of files that are functioning properly
-# so we want to exclude these from that work
-# FAILING_FILES = [
-#     '../../data/json/states-10m.json',
-#     '../../data/json/wind-map/ws-clipped-merged-simplify20.json',
-#     '../../data/json/states-output/nation.json',
-#     '../../data/json/states-output/states-no-overlap.json'
-# ]
-
-# figure out the keys for each file
-# for file in FAILING_FILES:
-#     with open(file, 'r') as f:
-#         file_data = json.loads(f.read())
-#         print(file, file_data.keys())
-
-# The following 3 "failing files" upload successfully when you do them
-# manually rather than iterativley with the rest. The first 
-# index of FAILING_FILES won't go through manually though
-# so we still need to trace down that issue
-# with open(FAILING_FILES[2], 'r') as f:
-#     file_data = json.loads(f.read())
-#     print(file_data.keys())
-#     collection_infrastructure.insert_many(file_data['geometries'])
-
-# with open(FAILING_FILES[3], 'r') as f:
-#     file_data = json.loads(f.read())
-#     print(file_data.keys())
-#     collection_infrastructure.insert_many(file_data['geometries'])
-
-# # This one was failing before because geometries was further nested
-# with open(FAILING_FILES[0], 'r') as f:
-#     file_data = json.loads(f.read())
-#     print(file_data.keys())
-#     collection_infrastructure.insert_many(file_data['objects']['states']['geometries'])
-
-# The following file won't go through when trying to insert by geometries 
-# because each wind speed category has its own 'geometries' property.
-# We have to discern whether the data received from mapshaper is good enough or not.
-# with open(FAILING_FILES[1], 'r') as f:
-#     file_data = json.loads(f.read())
-#     print(file_data.keys())
-#     collection_infrastructure.insert_many(file_data['objects']['geometries'])
-
-# remove failing files from larger, properly functioning batch
-# for path in FAILING_FILES:
-#     files.remove(path)
-
 for file in files:
     with open(file, 'r') as f:
         file_data = json.loads(f.read())
@@ -103,24 +44,7 @@ for file in files:
             collection_infrastructure.insert_many(file_data['geometries'])
             print('Successful file: ' + file)
 
-# This method had things failing seemingly arbitrarily.
-        # try:
-        #     print('successful file: ' + file)
-        #     print(file_data.keys())
-        #     collection_infrastructure.insert_many(file_data['features'])
-        # except: 
-        #     collection_infrastructure.insert_many(file_data['objects'])
-        #     print('OBJECTS FILE: ' + file, file_data.keys())
-        # finally:
-        #      print('GEOMETRIES FILE: ' + file, file_data.keys())
-        #      collection_infrastructure.insert_many(file_data['geometries'])
 
 client.close()
-
-# read a file and convert to dict
-# modify the schema 
-# upload to single massive collection
-# create index upon collection instantiation
-# index should update automatically
 
 
