@@ -8,6 +8,7 @@ from energy_maps_api.update.views import bp as update_bp
 from energy_maps_api.delete.views import bp as delete_bp
 from energy_maps_api.errors.views import bp as errors_bp 
 
+# TODO: See if this conflicts with the same app definition in app.py
 app = Flask(__name__)
 
 app.register_blueprint(create_bp)

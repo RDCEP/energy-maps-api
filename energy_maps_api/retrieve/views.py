@@ -15,6 +15,18 @@ bp = Blueprint('retrieve', __name__,
 def index():
     return "Index page"
 
+# Compare against previous implementation of get_infrastructure() below
+@bp.route('<path:url>', methods=['GET'])
+def get_infrastructure2(object):
+    url = ''
+    if object.properties.type.secondary is not None:
+        url = f'{object.properties.type.primary}/{object.properties.type.secondary}'
+    else:
+        url = f'{object.properties.type.primary}'
+
+    return url
+
+
 # Example of getting url params from the client
 # https://github.com/njmattes/goodfornothing/blob/master/goodfornothing/no1/views.py
 # @mod.route('/init/<int:width>/<int:height>')
