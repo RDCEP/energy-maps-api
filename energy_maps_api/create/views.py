@@ -1,12 +1,12 @@
 from flask.wrappers import Request
-from energy_maps_api.main import EnergyMapsMongoDocument
+from energy_maps_api.energy_maps_mongo_document import EnergyMapsMongoDocument
 from flask import Blueprint, request
 from flask.json import jsonify
 from energy_maps_api.constants import URL_PREFIX
 import energy_maps_api.errors.views as errors
 
 
-bp = Blueprint('create', __name__,
+bp = Blueprint('create_resource', __name__,
                url_prefix=URL_PREFIX)
 
 

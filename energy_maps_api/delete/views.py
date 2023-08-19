@@ -1,7 +1,7 @@
 from flask import Blueprint
 from energy_maps_api.constants import URL_PREFIX
 
-bp = Blueprint('delete', __name__,
+bp = Blueprint('delete_resource', __name__,
                url_prefix=URL_PREFIX)
 
 

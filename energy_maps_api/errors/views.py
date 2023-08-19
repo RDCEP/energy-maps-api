@@ -5,9 +5,11 @@ from flask import request
 # not sure which logging package to use
 # from flask import log
 # import logging
-from energy_maps_api import app
+# from energy_maps_api import app
+from energy_maps_api.app import app
 
-bp = Blueprint('retrieve', __name__, url_prefix=URL_PREFIX)
+bp = Blueprint('errors', __name__, url_prefix=URL_PREFIX)
+
 
 def error_response(status):
     return app.logger.error('Error: %s\n %s\n%s\n%s', status, request.headers, request.get_data, request.url)

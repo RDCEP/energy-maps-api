@@ -1,30 +1,46 @@
 # API will get called if we zoom in or out, when the user first goes to the site, when they turn on a new layer
 # API won't get called when I reorder layers, when I turn off a layer
 # Minimum retrieval is pass me a bounding box -- doesn't even have to be the right ones
-
-from flask import Blueprint, jsonify
+try:
+    import simplejson as json
+except ImportError:
+    import json
+from flask import Blueprint, jsonify, Response, request
 from energy_maps_api.constants import URL_PREFIX
-import energy_maps_api.errors.views as errors 
+import energy_maps_api.errors.views as errors
+from energy_maps_api.main import EnergyMapsAPI
 
 
-bp = Blueprint('retrieve', __name__,
+bp = Blueprint('retrieve_resource', __name__,
                url_prefix=URL_PREFIX)
+api = EnergyMapsAPI()
 
 
 @bp.route('/')
 def index():
     return "Index page"
 
-# Compare against previous implementation of get_infrastructure() below
-@bp.route('<path:url>', methods=['GET'])
-def get_infrastructure2(object):
-    url = ''
-    if object.properties.type.secondary is not None:
-        url = f'{object.properties.type.primary}/{object.properties.type.secondary}'
-    else:
-        url = f'{object.properties.type.primary}'
 
-    return url
+# @bp.route('/mines/coal', methods=['GET'])
+# def get_coal_mines(url):
+#     props = {
+#         'properties.type.primary': 'mines',
+#         'properties.type.secondary': 'coal',
+#         'properties.required.years.nominal': None,
+#     }
+#     data = api.get_from_props(url)
+#     response = Response(json.dumps(data), mimetype='application/json')
+#     response.headers['Access-Control-Allow-Origin'] = '*'
+#     return response
+
+
+@bp.route('<path:url>', methods=['GET'])
+def get_infrastructure2(url):
+    data = api.get_from_url(url)
+    response = Response(json.dumps(data), mimetype='application/json')
+    # response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:3000'
+    return response
 
 
 # Example of getting url params from the client
@@ -74,6 +90,7 @@ def get_infrastructure2(object):
 # can be more minimal than that for the first go around though
 @bp.route('/<string:infrastructure_type>')
 def get_infrastructure(infrastructure_type: str, bounding_box, methods=['GET']):
+    print(2)
     result = 0 # MDB operations to retriever infrastructure_type 
                # from the db
     if result:
