@@ -38,8 +38,7 @@ def index():
 def get_infrastructure2(url):
     data = api.get_from_url(url)
     response = Response(json.dumps(data), mimetype='application/json')
-    # response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Origin'] = 'http://127.0.0.1:3000'
+    response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
 
