@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+
 class EnergyMapsSchema(object):
     def __init__(self, x, y, properties):
         self.x = x

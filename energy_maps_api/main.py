@@ -51,17 +51,16 @@ class EnergyMapsAPI(object):
 
     @staticmethod
     def parse_url(url):
-        url_list = url.split('/')
-        key_list = ['properties.required.years.nominal',
-                    'properties.type.primary',
-                    'properties.type.secondary']
+        url_list = url.strip('/').split('/')
+        collection = url_list[0]
+        key_list = ['properties.required.years.nominal',]
         prop_dict = {}
-        for i, x in enumerate(url_list):
+        for i, x in enumerate(url_list[1:]):
             try:
                 prop_dict[key_list[i]] = int(x)
             except ValueError:
                 prop_dict[key_list[i]] = x
-        return prop_dict
+        return collection, prop_dict
 
     def load_geojson(self, path):
         """Load a GeoJSON document and stare its features for ingesting.
@@ -100,15 +99,22 @@ class EnergyMapsAPI(object):
         return True
 
     def get_from_url(self, url):
-        props = self.parse_url(url)
+        collection, props = self.parse_url(url)
         return {
             'type': 'FeatureCollection',
-            'features': list(self.get_from_props(props))
+            'features': list(self.get_from_props(props, collection))
         }
 
-    def get_from_props(self, props):
-        # props['project'] = {'_id': 0}
-        return self.db['infrastructure'].find(props, projection={'_id': False})
+    def get_from_props(self, props, collection):
+        if collection in [
+            'electric_grid_100_300_kV_AC', 'electric_grid_345_735_kV_AC',
+            'electric_grid_under_100', 'railroads', 'wells_oil', 'wells_gas',
+            'pipelines_gas', 'pipelines_oil', 'pipelines_petroleum_product'
+        ]:
+            proj = {'geometry': 1, 'properties.original.class': 1, '_id': 0}
+        else:
+            proj = {'_id': 0}
+        return self.db[collection].find(props, projection=proj)
 
 
 if __name__ == '__main__':

@@ -36,9 +36,10 @@ def index():
 
 @bp.route('<path:url>', methods=['GET'])
 def get_infrastructure2(url):
+    print(url)
     data = api.get_from_url(url)
     response = Response(json.dumps(data), mimetype='application/json')
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
