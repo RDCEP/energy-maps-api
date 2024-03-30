@@ -5,7 +5,9 @@ try:
     import simplejson as json
 except ImportError:
     import json
+import gzip
 from flask import Blueprint, jsonify, Response, request
+from flask import make_response
 from energy_maps_api.constants import URL_PREFIX
 import energy_maps_api.errors.views as errors
 from energy_maps_api.main import EnergyMapsAPI
@@ -36,9 +38,12 @@ def index():
 
 @bp.route('<path:url>', methods=['GET'])
 def get_infrastructure2(url):
-    print(url)
     data = api.get_from_url(url)
-    response = Response(json.dumps(data), mimetype='application/json')
+    content = gzip.compress(json.dumps(data).encode('utf8'), 5)
+    response = make_response(content)
+    response.headers['Content-length'] = len(content)
+    response.headers['Content-Encoding'] = 'gzip'
+    # response = Response(json.dumps(data), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
