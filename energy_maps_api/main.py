@@ -112,8 +112,20 @@ class EnergyMapsAPI(object):
             'pipelines_gas', 'pipelines_oil', 'pipelines_petroleum_product'
         ]:
             proj = {'geometry': 1, 'properties.original.class': 1, '_id': 0}
+        elif collection in [
+            'power_plants_coal', 'power_plants_geothermal',
+            'power_plants_hydroelectric', 'power_plants_natural_gas',
+            'power_plants_nuclear', 'power_plants_petroleum',
+            'power_plants_solar', 'power_plants_wind'
+        ]:
+            proj = {'geometry': 1, 'properties.original.SUMMER_CAP': 1,
+                    'properties.original.total_cap': 1, '_id': 0}
+        elif collection in ['refineries_petroleum']:
+            proj = {'geometry': 1, 'properties.original': 1, '_id': 0}
+        elif collection in ['mines_coal']:
+            proj = {'geometry': 1, 'properties.original.tot_prod': 1, '_id': 0}
         else:
-            proj = {'_id': 0}
+            proj = {'geometry': 1, '_id': 0}
         return self.db[collection].find(props, projection=proj)
 
 
