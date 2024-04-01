@@ -23,23 +23,12 @@ def index():
     return "Index page"
 
 
-# @bp.route('/mines/coal', methods=['GET'])
-# def get_coal_mines(url):
-#     props = {
-#         'properties.type.primary': 'mines',
-#         'properties.type.secondary': 'coal',
-#         'properties.required.years.nominal': None,
-#     }
-#     data = api.get_from_props(url)
-#     response = Response(json.dumps(data), mimetype='application/json')
-#     response.headers['Access-Control-Allow-Origin'] = '*'
-#     return response
-
-
 @bp.route('<path:url>', methods=['GET'])
 def get_infrastructure2(url):
     data = api.get_from_url(url)
-    content = gzip.compress(json.dumps(data).encode('utf8'), 5)
+    data = json.dumps(data).encode('utf8')
+    # content = gzip.compress(json.dumps(data).encode('utf8'), 5)
+    content = gzip.compress(data, 5)
     response = make_response(content)
     response.headers['Content-length'] = len(content)
     response.headers['Content-Encoding'] = 'gzip'
@@ -47,49 +36,6 @@ def get_infrastructure2(url):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-
-# Example of getting url params from the client
-# https://github.com/njmattes/goodfornothing/blob/master/goodfornothing/no1/views.py
-# @mod.route('/init/<int:width>/<int:height>')
-# def init(width, height):
-#     session['width'] = width
-#     session['height'] = height
-#     session['area'] = width * height
-#     arr = np.arange(session['area'])
-#     np.random.shuffle(arr)
-#     init_collection(session.sid)
-#     write_idxs(arr, session.sid)
-#     return Response(
-#         json.dumps({'success': True}),
-#         200,
-#         {'ContentType': 'application/json'}
-#     )
-
-# Relevant client side example, put something like this in the front end app
-# function pxls(t) {
-#     /**
-#      * If we have run through all pixels, set t back to 0, begin running
-#      * the wipe() function, and return.
-#      */
-#     if (t >= width * height) {
-#       t = 0;
-#       wipe(t, width * height);
-#       return;
-#     }
-#     d3.json(`/no1/get_${mode}/${t},${number}/${threshold}/${network}`, {
-#       headers: {
-#         'Content-type': 'application/json; charset=UTF-8'
-#       }}).then(json => {
-#         for (let i = 0; i < json['pxls'].length; ++i) {
-#           fill_pxl(
-#             json.pxls[i].color,
-#             json.pxls[i].xy
-#           );
-#         }
-#       });
-#     t += number;
-#     setTimeout(pxls.bind({}, t), timer);
-#   }
 
 # pass a bounding box, a filter for types of info (only coal power plants)
 # can be more minimal than that for the first go around though
