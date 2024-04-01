@@ -108,25 +108,108 @@ class EnergyMapsAPI(object):
     def get_from_props(self, props, collection):
         if collection in [
             'electric_grid_100_300_kV_AC', 'electric_grid_345_735_kV_AC',
-            'electric_grid_under_100', 'railroads', 'wells_oil', 'wells_gas',
+            'electric_grid_under_100', 'railroads', 'electric_grid_dc',
             'pipelines_gas', 'pipelines_oil', 'pipelines_petroleum_product'
         ]:
-            proj = {'geometry': 1, 'properties.original.class': 1, '_id': 0}
+            pipeline = [{
+                '$match': {
+                    'geometry.type': 'LineString'
+                }
+            }, {
+                '$project': {
+                    '_id': 0,
+                    'properties.original.class': 1,
+                    'geometry.type': 1,
+                    'geometry.coordinates': {
+                        '$map': {
+                            'input': '$geometry.coordinates',
+                            'as': 'coords',
+                            'in': {
+                                '$map': {
+                                    'input': '$$coords',
+                                    'as': 'coord',
+                                    'in': {
+                                        '$round': ['$$coord', 4]
+                                    }}}}}}}]
+            # proj = {'geometry': 1, 'properties.original.class': 1, '_id': 0}
+        elif collection in [
+            'wells_oil', 'wells_gas'
+        ]:
+            pipeline = [{
+                '$project': {
+                    '_id': 0,
+                    'geometry.type': 1,
+                    'geometry.coordinates': {
+                        '$map': {
+                            'input': '$geometry.coordinates',
+                            'as': 'coord',
+                            'in': {
+                                '$round': ['$$coord', 4]
+                            }}}}}]
         elif collection in [
             'power_plants_coal', 'power_plants_geothermal',
             'power_plants_hydroelectric', 'power_plants_natural_gas',
             'power_plants_nuclear', 'power_plants_petroleum',
             'power_plants_solar', 'power_plants_wind'
         ]:
-            proj = {'geometry': 1, 'properties.original.SUMMER_CAP': 1,
-                    'properties.original.total_cap': 1, '_id': 0}
+            pipeline = [{
+                '$project': {
+                    '_id': 0,
+                    'properties.original.SUMMER_CAP': 1,
+                    'properties.original.total_cap': 1,
+                    'geometry.type': 1,
+                    'geometry.coordinates': {
+                        '$map': {
+                            'input': '$geometry.coordinates',
+                            'as': 'coord',
+                            'in': {
+                                '$round': ['$$coord', 4]
+                            }}}}}]
+            # proj = {'geometry': 1, 'properties.original.SUMMER_CAP': 1,
+            #         'properties.original.total_cap': 1, '_id': 0}
         elif collection in ['refineries_petroleum']:
-            proj = {'geometry': 1, 'properties.original': 1, '_id': 0}
+            pipeline = [{
+                '$project': {
+                    '_id': 0,
+                    'properties.original': 1,
+                    'geometry.type': 1,
+                    'geometry.coordinates': {
+                        '$map': {
+                            'input': '$geometry.coordinates',
+                            'as': 'coord',
+                            'in': {
+                                '$round': ['$$coord', 4]
+                            }}}}}]
+            # proj = {'geometry': 1, 'properties.original': 1, '_id': 0}
         elif collection in ['mines_coal']:
-            proj = {'geometry': 1, 'properties.original.tot_prod': 1, '_id': 0}
+            pipeline = [{
+                '$project': {
+                    '_id': 0,
+                    'properties.original.tot_prod': 1,
+                    'geometry.type': 1,
+                    'geometry.coordinates': {
+                        '$map': {
+                            'input': '$geometry.coordinates',
+                            'as': 'coord',
+                            'in': {
+                                '$round': ['$$coord', 4]
+                            }}}}}]
+            # proj = {'geometry': 1, 'properties.original.tot_prod': 1, '_id': 0}
         else:
+            pipeline = [{
+                '$project': {
+                    '_id': 0,
+                    'geometry.type': 1,
+                    'geometry.coordinates': {
+                        '$map': {
+                            'input': '$geometry.coordinates',
+                            'as': 'coord',
+                            'in': {
+                                '$round': ['$$coord', 4]
+                            }}}}}]
             proj = {'geometry': 1, '_id': 0}
-        return self.db[collection].find(props, projection=proj)
+        return self.db[collection].aggregate(pipeline)
+        # return self.db[collection].find(props, projection=proj)
 
 
 if __name__ == '__main__':
