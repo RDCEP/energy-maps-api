@@ -53,7 +53,8 @@ class EnergyMapsAPI(object):
     def parse_url(url):
         url_list = url.strip('/').split('/')
         collection = url_list[0]
-        key_list = ['properties.required.years.nominal',]
+        # TODO: This hardcoding is shit. It should be specified in the URI.
+        key_list = ['year', 'k']
         prop_dict = {}
         for i, x in enumerate(url_list[1:]):
             try:
@@ -106,6 +107,9 @@ class EnergyMapsAPI(object):
         }
 
     def get_from_props(self, props, collection):
+        match = {
+            'properties.required.years.nominal': props['year'],
+        }
         if collection in [
             'electric_grid_100_300_kV_AC', 'electric_grid_345_735_kV_AC',
             'electric_grid_under_100', 'railroads', 'electric_grid_dc',
@@ -113,7 +117,8 @@ class EnergyMapsAPI(object):
         ]:
             pipeline = [{
                 '$match': {
-                    'geometry.type': 'LineString'
+                    'properties.required.years.nominal': props['year'],
+                    'geometry.type': 'LineString',
                 }
             }, {
                 '$project': {
@@ -136,8 +141,16 @@ class EnergyMapsAPI(object):
             'wells_oil', 'wells_gas'
         ]:
             pipeline = [{
+                '$match': {
+                    # 'properties.original.zoom': props['k'],
+                    'properties.required.years.nominal': props['year'],
+                }
+            }, {
                 '$project': {
                     '_id': 0,
+                    'properties.original.zoom': 1,
+                    'properties.original.oilgas': 1,
+                    'properties.original.class': 1,
                     'geometry.type': 1,
                     'geometry.coordinates': {
                         '$map': {
@@ -153,6 +166,10 @@ class EnergyMapsAPI(object):
             'power_plants_solar', 'power_plants_wind'
         ]:
             pipeline = [{
+                '$match': {
+                    'properties.required.years.nominal': props['year'],
+                }
+            }, {
                 '$project': {
                     '_id': 0,
                     'properties.original.SUMMER_CAP': 1,
@@ -169,6 +186,10 @@ class EnergyMapsAPI(object):
             #         'properties.original.total_cap': 1, '_id': 0}
         elif collection in ['refineries_petroleum']:
             pipeline = [{
+                '$match': {
+                    'properties.required.years.nominal': props['year'],
+                }
+            }, {
                 '$project': {
                     '_id': 0,
                     'properties.original': 1,
@@ -183,6 +204,10 @@ class EnergyMapsAPI(object):
             # proj = {'geometry': 1, 'properties.original': 1, '_id': 0}
         elif collection in ['mines_coal']:
             pipeline = [{
+                '$match': {
+                    'properties.required.years.nominal': props['year'],
+                }
+            }, {
                 '$project': {
                     '_id': 0,
                     'properties.original.tot_prod': 1,
@@ -197,6 +222,10 @@ class EnergyMapsAPI(object):
             # proj = {'geometry': 1, 'properties.original.tot_prod': 1, '_id': 0}
         else:
             pipeline = [{
+                '$match': {
+                    'properties.required.years.nominal': props['year'],
+                }
+            }, {
                 '$project': {
                     '_id': 0,
                     'geometry.type': 1,
