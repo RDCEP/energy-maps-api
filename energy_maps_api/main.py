@@ -52,16 +52,16 @@ class EnergyMapsAPI(object):
     @staticmethod
     def parse_url(url):
         url_list = url.strip('/').split('/')
-        collection = url_list[0]
+        # collection = url_list[0]
         # TODO: This hardcoding is shit. It should be specified in the URI.
-        key_list = ['year', 'k']
+        key_list = ['primary', 'secondary', 'year', 'k']
         prop_dict = {}
-        for i, x in enumerate(url_list[1:]):
+        for i, x in enumerate(url_list):
             try:
                 prop_dict[key_list[i]] = int(x)
             except ValueError:
                 prop_dict[key_list[i]] = x
-        return collection, prop_dict
+        return prop_dict
 
     def load_geojson(self, path):
         """Load a GeoJSON document and stare its features for ingesting.
@@ -100,24 +100,24 @@ class EnergyMapsAPI(object):
         return True
 
     def get_from_url(self, url):
-        collection, props = self.parse_url(url)
+        props = self.parse_url(url)
         return {
             'type': 'FeatureCollection',
-            'features': list(self.get_from_props(props, collection))
+            'features': list(self.get_from_props(props))
         }
 
-    def get_from_props(self, props, collection):
+    def get_from_props(self, props):
         match = {
             'properties.required.years.nominal': props['year'],
         }
-        if collection in [
-            'electric_grid_100_300_kV_AC', 'electric_grid_345_735_kV_AC',
-            'electric_grid_under_100', 'railroads', 'electric_grid_dc',
-            'pipelines_gas', 'pipelines_oil', 'pipelines_petroleum_product'
+        if props['primary'] in [
+            'electric_grid', 'railroads', 'pipelines'
         ]:
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                     'geometry.type': 'LineString',
                 }
             }, {
@@ -136,14 +136,13 @@ class EnergyMapsAPI(object):
                                     'in': {
                                         '$round': ['$$coord', 4]
                                     }}}}}}}]
-            # proj = {'geometry': 1, 'properties.original.class': 1, '_id': 0}
-        elif collection in [
-            'wells_oil', 'wells_gas'
-        ]:
+        elif props['primary'] in ['wells']:
             pipeline = [{
                 '$match': {
                     # 'properties.original.zoom': props['k'],
                     'properties.required.years.nominal': props['year'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -159,15 +158,12 @@ class EnergyMapsAPI(object):
                             'in': {
                                 '$round': ['$$coord', 4]
                             }}}}}]
-        elif collection in [
-            'power_plants_coal', 'power_plants_geothermal',
-            'power_plants_hydroelectric', 'power_plants_natural_gas',
-            'power_plants_nuclear', 'power_plants_petroleum',
-            'power_plants_solar', 'power_plants_wind'
-        ]:
+        elif props['primary'] in ['power_plants']:
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -184,10 +180,12 @@ class EnergyMapsAPI(object):
                             }}}}}]
             # proj = {'geometry': 1, 'properties.original.SUMMER_CAP': 1,
             #         'properties.original.total_cap': 1, '_id': 0}
-        elif collection in ['refineries_petroleum']:
+        elif props['primary'] in ['refineries']:
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -202,10 +200,12 @@ class EnergyMapsAPI(object):
                                 '$round': ['$$coord', 4]
                             }}}}}]
             # proj = {'geometry': 1, 'properties.original': 1, '_id': 0}
-        elif collection in ['mines_coal']:
+        elif props['primary'] in ['mines']:
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -224,6 +224,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -237,7 +239,7 @@ class EnergyMapsAPI(object):
                                 '$round': ['$$coord', 4]
                             }}}}}]
             proj = {'geometry': 1, '_id': 0}
-        return self.db[collection].aggregate(pipeline)
+        return self.db['infrastructure'].aggregate(pipeline)
         # return self.db[collection].find(props, projection=proj)
 
 
