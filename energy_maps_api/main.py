@@ -165,10 +165,10 @@ class EnergyMapsAPI(object):
                     'zoom': {'$first': '$properties.original.zoom'},
                     'oilgas': {'$first': '$properties.original.oilgas'},
                     'class': {'$first': '$properties.original.class'},
-                    # 'lon': {'$first': '$lon'},
-                    # 'lat': {'$first': '$lat'},
-                    'lon': {'$first': {'$round': [{'$arrayElemAt': ['$geometry.coordinates', 0]}, 4]}},
-                    'lat': {'$first': {'$round': [{'$arrayElemAt': ['$geometry.coordinates', 1]}, 4]}},
+                    'lon': {'$first': {'$round': [{
+                        '$arrayElemAt': ['$geometry.coordinates', 0]}, 4]}},
+                    'lat': {'$first': {'$round': [{
+                        '$arrayElemAt': ['$geometry.coordinates', 1]}, 4]}},
                     'type': {'$first': '$geometry.type'},
                 }
             }, {
