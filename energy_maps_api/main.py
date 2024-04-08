@@ -52,7 +52,6 @@ class EnergyMapsAPI(object):
     @staticmethod
     def parse_url(url):
         url_list = url.strip('/').split('/')
-        # collection = url_list[0]
         # TODO: This hardcoding is shit. It should be specified in the URI.
         key_list = ['primary', 'secondary', 'year', 'k']
         prop_dict = {}
@@ -107,12 +106,7 @@ class EnergyMapsAPI(object):
         }
 
     def get_from_props(self, props):
-        match = {
-            'properties.required.years.nominal': props['year'],
-        }
-        if props['primary'] in [
-            'electric_grid', 'railroads', 'pipelines'
-        ]:
+        if props['primary'] in ['electric_grid', 'railroads', 'pipelines']:
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
@@ -139,7 +133,6 @@ class EnergyMapsAPI(object):
         elif props['primary'] in ['wells']:
             pipeline = [{
                 '$match': {
-                    # 'properties.original.zoom': props['k'],
                     'properties.required.years.nominal': props['year'],
                     'properties.type.primary': props['primary'],
                     'properties.type.secondary': props['secondary'],
@@ -178,8 +171,6 @@ class EnergyMapsAPI(object):
                             'in': {
                                 '$round': ['$$coord', 4]
                             }}}}}]
-            # proj = {'geometry': 1, 'properties.original.SUMMER_CAP': 1,
-            #         'properties.original.total_cap': 1, '_id': 0}
         elif props['primary'] in ['refineries']:
             pipeline = [{
                 '$match': {
@@ -199,7 +190,6 @@ class EnergyMapsAPI(object):
                             'in': {
                                 '$round': ['$$coord', 4]
                             }}}}}]
-            # proj = {'geometry': 1, 'properties.original': 1, '_id': 0}
         elif props['primary'] in ['mines']:
             pipeline = [{
                 '$match': {
@@ -219,7 +209,6 @@ class EnergyMapsAPI(object):
                             'in': {
                                 '$round': ['$$coord', 4]
                             }}}}}]
-            # proj = {'geometry': 1, 'properties.original.tot_prod': 1, '_id': 0}
         else:
             pipeline = [{
                 '$match': {
@@ -240,7 +229,6 @@ class EnergyMapsAPI(object):
                             }}}}}]
             proj = {'geometry': 1, '_id': 0}
         return self.db['infrastructure'].aggregate(pipeline)
-        # return self.db[collection].find(props, projection=proj)
 
 
 if __name__ == '__main__':
