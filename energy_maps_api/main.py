@@ -138,19 +138,49 @@ class EnergyMapsAPI(object):
                     'properties.type.secondary': props['secondary'],
                 }
             }, {
+                '$addFields': {
+                    'lon': {
+                        '$round': [
+                            {'$arrayElemAt': ['$geometry.coordinates', 0]},
+                            {'$floor': {'$sqrt': props['k']}}
+                        ]
+                    },
+                    'lat': {
+                        '$round': [
+                            {'$arrayElemAt': ['$geometry.coordinates', 1]},
+                            {'$floor': {'$sqrt': props['k']}}
+                        ]
+                    }
+                }
+            }, {
+                '$addFields': {
+                    'lonlat': {'$concat': [{'$toString': '$lon'},
+                                           {'$toString': '$lat'}]},
+                }
+            }, {
+                '$sort': {'lonlat': 1}
+            }, {
+                '$group': {
+                    '_id': {'lonlat': '$lonlat'},
+                    'zoom': {'$first': '$properties.original.zoom'},
+                    'oilgas': {'$first': '$properties.original.oilgas'},
+                    'class': {'$first': '$properties.original.class'},
+                    # 'lon': {'$first': '$lon'},
+                    # 'lat': {'$first': '$lat'},
+                    'lon': {'$first': {'$round': [{'$arrayElemAt': ['$geometry.coordinates', 0]}, 4]}},
+                    'lat': {'$first': {'$round': [{'$arrayElemAt': ['$geometry.coordinates', 1]}, 4]}},
+                    'type': {'$first': '$geometry.type'},
+                }
+            }, {
                 '$project': {
                     '_id': 0,
-                    'properties.original.zoom': 1,
-                    'properties.original.oilgas': 1,
-                    'properties.original.class': 1,
-                    'geometry.type': 1,
-                    'geometry.coordinates': {
-                        '$map': {
-                            'input': '$geometry.coordinates',
-                            'as': 'coord',
-                            'in': {
-                                '$round': ['$$coord', 4]
-                            }}}}}]
+                    'geometry.type': '$type',
+                    'geometry.coordinates': ['$lon', '$lat'],
+                    'properties.original.zoom': '$zoom',
+                    'properties.original.oilgas': '$oilgas',
+                    'properties.original.class': '$class',
+                }
+            }]
         elif props['primary'] in ['power_plants']:
             pipeline = [{
                 '$match': {
@@ -170,7 +200,11 @@ class EnergyMapsAPI(object):
                             'as': 'coord',
                             'in': {
                                 '$round': ['$$coord', 4]
-                            }}}}}]
+                            }
+                        }
+                    }
+                }
+            }]
         elif props['primary'] in ['refineries']:
             pipeline = [{
                 '$match': {
