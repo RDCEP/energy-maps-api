@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 try:
-    import simplejson as json
+    import orjson as json
 except ImportError:
     import json
 from pymongo import MongoClient, GEOSPHERE
