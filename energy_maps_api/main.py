@@ -53,7 +53,7 @@ class EnergyMapsAPI(object):
     def parse_url(url):
         url_list = url.strip('/').split('/')
         # TODO: This hardcoding is shit. It should be specified in the URI.
-        key_list = ['primary', 'secondary', 'year', 'k']
+        key_list = ['primary', 'secondary', 'year', 'k', 'resolution', 'bbox']
         prop_dict = {}
         for i, x in enumerate(url_list):
             try:
@@ -61,6 +61,10 @@ class EnergyMapsAPI(object):
             except ValueError:
                 prop_dict[key_list[i]] = x
         return prop_dict
+
+    @staticmethod
+    def parse_bbox(bbox):
+        return [[[float(a) for a in pair.split(',')] for pair in bbox.split(';')]]
 
     def load_geojson(self, path):
         """Load a GeoJSON document and stare its features for ingesting.
@@ -106,15 +110,26 @@ class EnergyMapsAPI(object):
         }
 
     def get_from_props(self, props):
-        if props['primary'] in ['electric_grid', 'railroads', 'pipelines']:
-            pipeline = [{
-                '$match': {
-                    'properties.required.years.nominal': props['year'],
-                    'properties.type.primary': props['primary'],
-                    'properties.type.secondary': props['secondary'],
-                    'geometry.type': 'LineString',
+        geo = {
+                '$geoIntersects': {
+                    '$geometry': {
+                        'type': 'Polygon',
+                        'coordinates': self.parse_bbox(props['bbox'])
+                    }
                 }
-            }, {
+        }
+        print(geo)
+        match = {
+            '$match': {
+                'properties.required.years.nominal': props['year'],
+                'properties.type.primary': props['primary'],
+                'properties.type.secondary': props['secondary'],
+                'geometry': geo
+            }
+        }
+        if props['primary'] in ['electric_grid', 'railroads', 'pipelines']:
+            pipeline = [
+                match, {
                 '$project': {
                     '_id': 0,
                     'properties.original.class': 1,
@@ -225,13 +240,7 @@ class EnergyMapsAPI(object):
                                 '$round': ['$$coord', 4]
                             }}}}}]
         elif props['primary'] in ['mines']:
-            pipeline = [{
-                '$match': {
-                    'properties.required.years.nominal': props['year'],
-                    'properties.type.primary': props['primary'],
-                    'properties.type.secondary': props['secondary'],
-                }
-            }, {
+            pipeline = [match, {
                 '$project': {
                     '_id': 0,
                     'properties.original.tot_prod': 1,
