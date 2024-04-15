@@ -110,21 +110,21 @@ class EnergyMapsAPI(object):
         }
 
     def get_from_props(self, props):
-        geo = {
-                '$geoIntersects': {
-                    '$geometry': {
-                        'type': 'Polygon',
-                        'coordinates': self.parse_bbox(props['bbox'])
-                    }
-                }
-        }
-        print(geo)
+        lonlat = [coord for pair in self.parse_bbox(props['bbox']) for coord in pair]
         match = {
             '$match': {
-                'properties.required.years.nominal': props['year'],
-                'properties.type.primary': props['primary'],
-                'properties.type.secondary': props['secondary'],
-                'geometry': geo
+                '$and': [
+                    {'$or': [{'minLat': {'$lt': max([pair[1] for pair in lonlat])}},
+                             {'minLat': {'$gt': 50}}]},
+                    {'$or': [{'maxLat': {'$gt': min([pair[1] for pair in lonlat])}},
+                             {'maxLat': {'$lt': 25}}]},
+                    {'$or': [{'maxLon': {'$gt': min([pair[0] for pair in lonlat])}},
+                             {'maxLon': {'$lt': -150}}]},
+                    {'minLon': {'$lt': max([pair[0] for pair in lonlat])}},
+                    {'properties.type.secondary': props['secondary']},
+                    {'properties.type.primary': props['primary']},
+                    {'properties.required.years.nominal': props['year']},
+                ],
             }
         }
         if props['primary'] in ['electric_grid', 'railroads', 'pipelines']:
@@ -135,16 +135,35 @@ class EnergyMapsAPI(object):
                     'properties.original.class': 1,
                     'geometry.type': 1,
                     'geometry.coordinates': {
-                        '$map': {
-                            'input': '$geometry.coordinates',
-                            'as': 'coords',
-                            'in': {
+                        '$cond': {
+                            'if': {'$eq': ['$geometry.type', 'LineString']},
+                            'then': {
                                 '$map': {
-                                    'input': '$$coords',
-                                    'as': 'coord',
+                                    'input': '$geometry.coordinates',
+                                    'as': 'coords',
                                     'in': {
-                                        '$round': ['$$coord', 4]
-                                    }}}}}}}]
+                                        '$map': {
+                                            'input': '$$coords',
+                                            'as': 'coord',
+                                            'in': {
+                                                '$round': ['$$coord', 4]
+                                            }}}}},
+                            'else': {  # If not a LineString then it must be a MultiLineString
+                                '$map': {
+                                    'input': '$geometry.coordinates',
+                                    'as': 'coords',
+                                    'in': {
+                                        '$map': {
+                                            'input': '$$coords',
+                                            'as': 'coord',
+                                            'in': {
+                                                '$map': {
+                                                    'input': '$$coord',
+                                                    'as': 'pair',
+                                                    'in': {
+                                                        '$round': ['$$pair', 4]
+                                                    }}}}}}}
+                        }}}}]
         elif props['primary'] in ['wells']:
             pipeline = [{
                 '$match': {
@@ -271,7 +290,7 @@ class EnergyMapsAPI(object):
                                 '$round': ['$$coord', 4]
                             }}}}}]
             proj = {'geometry': 1, '_id': 0}
-        return self.db['infrastructure'].aggregate(pipeline)
+        return self.db['infrastructure_v2'].aggregate(pipeline)
 
 
 if __name__ == '__main__':
