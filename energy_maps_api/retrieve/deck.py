@@ -13,7 +13,7 @@ import energy_maps_api.errors.views as errors
 from energy_maps_api.main import EnergyMapsAPI
 
 
-bp = Blueprint('retrieve_resource', __name__,
+bp = Blueprint('retrieve_deck_resource', __name__,
                url_prefix='{}/deck/'.format(URL_PREFIX))
 api = EnergyMapsAPI()
 
