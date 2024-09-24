@@ -109,6 +109,10 @@ class EnergyMapsAPI(object):
             'features': list(self.get_from_props(props))
         }
 
+    def get_deck_from_url(self, url):
+        props = self.parse_url(url)
+        return list(self.get_from_props(props))
+
     def get_from_props(self, props):
         lonlat = [coord for pair in self.parse_bbox(props['bbox']) for coord in pair]
         match = {
@@ -121,8 +125,6 @@ class EnergyMapsAPI(object):
                     {'$or': [{'maxLon': {'$gt': min([pair[0] for pair in lonlat])}},
                              {'maxLon': {'$lt': -150}}]},
                     {'minLon': {'$lt': max([pair[0] for pair in lonlat])}},
-                    {'properties.type.secondary': props['secondary']},
-                    {'properties.type.primary': props['primary']},
                     {'properties.required.years.nominal': props['year']},
                 ],
             }
@@ -168,8 +170,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
-                    'properties.type.primary': props['primary'],
-                    'properties.type.secondary': props['secondary'],
+                    # 'properties.type.primary': props['primary'],
+                    # 'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$addFields': {
@@ -219,8 +221,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
-                    'properties.type.primary': props['primary'],
-                    'properties.type.secondary': props['secondary'],
+                    # 'properties.type.primary': props['primary'],
+                    # 'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -243,8 +245,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
-                    'properties.type.primary': props['primary'],
-                    'properties.type.secondary': props['secondary'],
+                    # 'properties.type.primary': props['primary'],
+                    # 'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
