@@ -132,6 +132,7 @@ class EnergyMapsAPI(object):
                 match, {
                 '$project': {
                     '_id': 0,
+                    'type': 1,
                     'properties.original.class': 1,
                     'geometry.type': 1,
                     'geometry.coordinates': {
@@ -208,6 +209,7 @@ class EnergyMapsAPI(object):
             }, {
                 '$project': {
                     '_id': 0,
+                    'type': 1,
                     'geometry.type': '$type',
                     'geometry.coordinates': ['$lon', '$lat'],
                     'properties.original.zoom': '$zoom',
@@ -225,6 +227,7 @@ class EnergyMapsAPI(object):
             }, {
                 '$project': {
                     '_id': 0,
+                    'type': 1,
                     'properties.original.SUMMER_CAP': 1,
                     'properties.original.total_cap': 1,
                     'geometry.type': 1,
@@ -249,6 +252,7 @@ class EnergyMapsAPI(object):
             }, {
                 '$project': {
                     '_id': 0,
+                    'type': 1,
                     'properties.original': 1,
                     'geometry.type': 1,
                     'geometry.coordinates': {
@@ -262,6 +266,7 @@ class EnergyMapsAPI(object):
             pipeline = [match, {
                 '$project': {
                     '_id': 0,
+                    'type': 1,
                     'properties.original.tot_prod': 1,
                     'geometry.type': 1,
                     'geometry.coordinates': {
@@ -281,6 +286,7 @@ class EnergyMapsAPI(object):
             }, {
                 '$project': {
                     '_id': 0,
+                    'type': 1,
                     'geometry.type': 1,
                     'geometry.coordinates': {
                         '$map': {
