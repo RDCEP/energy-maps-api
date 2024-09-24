@@ -126,6 +126,8 @@ class EnergyMapsAPI(object):
                              {'maxLon': {'$lt': -150}}]},
                     {'minLon': {'$lt': max([pair[0] for pair in lonlat])}},
                     {'properties.required.years.nominal': props['year']},
+                    {'properties.type.primary': props['primary']},
+                    {'properties.type.secondary': props['secondary']},
                 ],
             }
         }
@@ -170,8 +172,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
-                    # 'properties.type.primary': props['primary'],
-                    # 'properties.type.secondary': props['secondary'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$addFields': {
@@ -221,8 +223,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
-                    # 'properties.type.primary': props['primary'],
-                    # 'properties.type.secondary': props['secondary'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
@@ -245,8 +247,8 @@ class EnergyMapsAPI(object):
             pipeline = [{
                 '$match': {
                     'properties.required.years.nominal': props['year'],
-                    # 'properties.type.primary': props['primary'],
-                    # 'properties.type.secondary': props['secondary'],
+                    'properties.type.primary': props['primary'],
+                    'properties.type.secondary': props['secondary'],
                 }
             }, {
                 '$project': {
