@@ -32,6 +32,7 @@ def get_infrastructure2(url):
     response = make_response(content)
     response.headers['Content-length'] = len(content)
     response.headers['Content-Encoding'] = 'gzip'
+    response.headers['Content-Type'] = 'application/gzip'
     # response = Response(json.dumps(data), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
